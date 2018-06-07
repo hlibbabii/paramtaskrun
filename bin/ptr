@@ -1,0 +1,32 @@
+#!/usr/bin/env python
+
+import argparse
+from paramtaskrun.paramtaskrun import Project
+import os
+
+def check_files_exist(config_file, tunable_params_file, non_tunable_params_file):
+    if not os.path.exists(config_file):
+        print("Config file {} not found".format(config_file))
+        exit(1)
+    if not os.path.exists(tunable_params_file):
+        print("Param file {} not found".format(tunable_params_file))
+        exit(2)
+    if not os.path.exists(non_tunable_params_file):
+        print("Param file {} not found".format(non_tunable_params_file))
+        exit(3)
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--config-file', action='store', default='config.json')
+parser.add_argument('--tunable-params-file', action='store', default='tunable-params.json')
+parser.add_argument('--non-tunable-params-file', action='store', default='non-tunable-params.json')
+
+parser.add_argument('--prev-runs-file', action='store', default='prev_runs.pkl')
+
+parser.add_argument('tasks', metavar='Task', nargs='+', default=False)
+args = parser.parse_args()
+
+check_files_exist(args.config_file, args.tunable_params_file, args.non_tunable_params_file)
+
+project = Project(args.config_file, args.prev_runs_file)
+project.run(args.tunable_params_file, args.non_tunable_params_file, tasks_to_rerun=args.tasks)
+
