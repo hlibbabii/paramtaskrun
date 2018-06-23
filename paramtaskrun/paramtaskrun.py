@@ -163,7 +163,7 @@ class ProjectRun(object):
                     start_time = time.time()
                     success = task.run(params, non_tunable_params)
                     task_stats.time_seconds = time.time() - start_time
-                    task_stats.successfull = success
+                    task_stats.successful = success
                     result_str = "success" if success else "failure"
                     logging.info("Task {} out of {} [{}]({}): {} [{:d} s]".format(str(index + 1),
                                                                                   str(n_tasks),
@@ -174,9 +174,9 @@ class ProjectRun(object):
                     if not success:
                         project_run_succeded = False
                 else:
-                    task_stats.successfull = True
+                    task_stats.successful = True
             else:
-                task_stats.successfull = True
+                task_stats.successful = True
                 logging.info("Task {} out of {} [{}]-- up-to-date".format(str(index + 1), str(n_tasks), task.id))
 
         self.successful = project_run_succeded
