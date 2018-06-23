@@ -72,6 +72,9 @@ class Task(object):
     def __unicode__(self):
         return self.__str__()
 
+    def __repr__(self):
+        return self.__str__()
+
 
 class TaskRunStats(object):
     def __init__(self):
@@ -104,10 +107,17 @@ class TaskRunStats(object):
     def why_rerun(self, why_rerun):
         self._why_rerun = why_rerun
 
+    def __str__(self):
+        return str(self.successful)
+
+    def __repr__(self):
+        return self.__str__()
+
 
 class ProjectRun(object):
     def __init__(self, tasks_in_execution_order, param_values, non_tunable_param_values):
         self.taskRunStats = OrderedDict([(task, TaskRunStats()) for task in tasks_in_execution_order])
+
         self._successful = None
         self._param_values = param_values
         self._non_tunable_params = non_tunable_param_values
@@ -173,6 +183,12 @@ class ProjectRun(object):
 
     def get_non_tunable_params(self):
         return self._non_tunable_params
+
+    def __str__(self):
+        return str(self.taskRunStats)
+
+    def __repr__(self):
+        return self.__str__()
 
 
 class CyclicDependencyError(Exception):
@@ -247,6 +263,7 @@ class Project(object):
         self.runs.append(project_run)
         with open(self._prev_runs_file, 'wb') as f:
             pickle.dump(self.runs, f)
+        return project_run
 
     def run_all(self):
         self.run([], force_rerun_all=True)
@@ -302,7 +319,6 @@ class Project(object):
                 pending_dependencies[depends_on].append(current_task)
             task_list.append(current_task)
         pending_dependencies.default_factory = None
-        self.param_to_affected_tasks.default_factory = None
         if pending_dependencies:
             raise CyclicDependencyError("Some tasks depend on the following non-existent tasks or on themselves: " + ",".join(pending_dependencies.keys()))
         logging.debug("Task graph build successfully. The graph contains " + str(len(task_list)) + " tasks")
